@@ -1,0 +1,6 @@
+{
+  "name": "EcoSort",
+  "description": "Smart Waste Segregation & Municipal Management Platform — A cleaner city starts with smarter segregation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
