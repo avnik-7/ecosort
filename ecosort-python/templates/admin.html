@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+<p class="eyebrow">ECOSORT ANALYTICS · DEMO</p>
+<h1>Municipal overview</h1>
+<p>Monitor community reports and waste patterns.</p>
+
+<div class="stats">
+<div class="card"><h2>{{ stats.total }}</h2><p>Total reports</p></div>
+<div class="card"><h2>{{ stats.pending }}</h2><p>Pending</p></div>
+<div class="card"><h2>{{ stats.in_progress }}</h2><p>In progress</p></div>
+<div class="card"><h2>{{ stats.resolved }}</h2><p>Resolved</p></div>
+</div>
+
+<div class="charts">
+<div class="card">
+<h2>Waste categories</h2>
+<canvas id="categoryChart"></canvas>
+</div>
+<div class="card">
+<h2>Complaint status</h2>
+<canvas id="statusChart"></canvas>
+</div>
+</div>
+
+<h2>Submitted reports</h2>
+{% for report in reports %}
+<div class="card">
+<h3>#{{ report[0] }} · {{ report[1] }}</h3>
+<p>{{ report[2] }} — {{ report[3] }}</p>
+<p>Status: <strong>{{ report[4] }}</strong></p>
+<form method="POST" action="/update/{{ report[0] }}">
+<select name="status">
+<option {% if report[4] == 'Pending' %}selected{% endif %}>Pending</option>
+<option {% if report[4] == 'In Progress' %}selected{% endif %}>In Progress</option>
+<option {% if report[4] == 'Resolved' %}selected{% endif %}>Resolved</option>
+</select>
+<button class="btn">Update status</button>
+</form>
+</div>
+{% else %}
+<p>No reports submitted yet.</p>
+{% endfor %}
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const categories = {{ stats.categories | tojson }};
+const categoryLabels = Object.keys(categories);
+const categoryValues = Object.values(categories);
+
+new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            data: categoryValues,
+            backgroundColor: ['#39795b', '#9ac6a7', '#d6a85c', '#8b7770']
+        }]
+    },
+    options: { responsive: true }
+});
+
+new Chart(document.getElementById('statusChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Pending', 'In Progress', 'Resolved'],
+        datasets: [{
+            label: 'Reports',
+            data: [
+                {{ stats.pending }},
+                {{ stats.in_progress }},
+                {{ stats.resolved }}
+            ],
+            backgroundColor: ['#d6a85c', '#78a7a0', '#39795b'],
+            borderRadius: 7
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+});
+</script>
+{% endblock %}

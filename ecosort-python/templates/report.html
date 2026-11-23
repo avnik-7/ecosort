@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+<p class="eyebrow">COMMUNITY ACTION</p><h1>Report a waste issue</h1>
+<p>Help your community identify areas that need attention.</p>
+<form method="POST">
+<label>Waste category</label>
+<select name="category" required>
+<option value="">Choose category</option>
+<option>Wet</option><option>Dry</option><option>E-Waste</option><option>Hazardous</option>
+</select>
+<label>Location</label>
+<input name="location" placeholder="Area / street / landmark" required>
+<label>Description</label>
+<textarea name="description" placeholder="Describe the issue..." required></textarea>
+<button class="btn">Submit report →</button>
+</form>
+</section>
+{% endblock %}

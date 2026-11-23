@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+<p class="eyebrow">CITIZEN TOOL</p><h1>Where does it go?</h1>
+<p>Enter a waste item to get disposal guidance.</p>
+<form method="POST">
+<input name="item" placeholder="e.g. banana peel, mobile phone..." required>
+<button class="btn">Identify waste →</button>
+</form>
+{% if result %}
+<div class="result">
+<p class="eyebrow">IDENTIFICATION RESULT</p>
+<h2>{{ result.item }}</h2>
+<p><strong>Category:</strong> {{ result.category }}</p>
+<p><strong>Suggested destination:</strong> {{ result.bin }}</p>
+<p>{{ result.instruction }}</p>
+</div>
+{% endif %}
+</section>
+{% endblock %}
