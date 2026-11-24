@@ -1,41 +1,122 @@
-def classify_waste(item):
-    item = item.lower().strip()
+import re
 
-    rules = {
-        "Wet": {
-            "items": ["banana peel", "vegetable scraps", "food waste", "fruit waste", "tea leaves", "eggshell"],
-            "bin": "Green bin",
-            "instruction": "Compost it. Keep food waste separate from dry materials."
+RULES = {
+    "Wet": {
+        "items": {
+            "banana peel": ["banana skin"],
+            "vegetable scraps": ["vegetable waste", "veggie scraps"],
+            "food waste": ["leftover food", "cooked food waste", "food scraps"],
+            "fruit waste": ["fruit scraps", "rotten fruit"],
+            "tea leaves": ["used tea leaves", "tea waste"],
+            "eggshell": ["egg shells"],
+            "flowers": ["withered flowers", "puja flowers"],
+            "coconut shell": ["coconut husk", "coconut waste"],
+            "grass": ["lawn grass", "grass clippings"],
+            "dry leaves": ["fallen leaves", "dead leaves"],
+            "garden waste": ["plant waste", "plant trimmings"],
         },
-        "Dry": {
-            "items": ["paper", "cardboard", "plastic bottle", "glass bottle", "newspaper", "metal can"],
-            "bin": "Blue bin",
-            "instruction": "Keep it clean and dry. Send recyclable materials for recycling."
+        "bin": "Green bin",
+        "instruction": "Keep biodegradable waste separate. Compost where possible."
+    },
+
+    "Dry": {
+        "items": {
+            "paper": ["waste paper", "scrap paper"],
+            "cardboard": ["carton", "cardboard box"],
+            "plastic bottle": ["pet bottle", "water bottle"],
+            "glass bottle": ["glass jar", "broken glass bottle"],
+            "newspaper": ["old newspaper"],
+            "metal can": ["tin can", "aluminium can"],
+            "plastic packaging": ["plastic wrapper", "plastic packet"],
+            "plastic container": ["plastic box"],
+            "metal scrap": ["iron scrap", "steel scrap"],
+            "clean cloth": ["old clothes", "fabric scraps"],
         },
-        "E-Waste": {
-            "items": ["mobile phone", "battery", "charger", "laptop", "keyboard", "cable"],
-            "bin": "E-waste collection point",
-            "instruction": "Do not put electronic waste in regular bins. Use an authorised collection centre."
+        "bin": "Blue bin",
+        "instruction": "Keep dry recyclables clean and dry. Separate contaminated materials."
+    },
+
+    "E-Waste": {
+        "items": {
+            "mobile phone": ["cell phone", "smartphone", "old phone"],
+            "mobile screen": ["broken mobile screen", "phone screen", "cracked phone screen", "lcd screen", "touchscreen", "mobilescreen"],
+            "battery": ["used battery", "dead battery", "phone battery"],
+            "charger": ["phone charger", "mobile charger"],
+            "laptop": ["old laptop", "broken laptop"],
+            "keyboard": ["computer keyboard"],
+            "mouse": ["computer mouse"],
+            "cable": ["charging cable", "usb cable", "wire"],
+            "earphones": ["earbuds", "headphones"],
+            "power bank": ["portable charger"],
+            "computer monitor": ["desktop monitor", "computer screen"],
+            "circuit board": ["motherboard", "pcb"],
+            "remote control": ["tv remote"],
+            "calculator": ["electronic calculator"],
         },
-        "Hazardous": {
-            "items": ["paint", "chemical", "medicine", "pesticide", "disinfectant", "used syringe"],
-            "bin": "Hazardous waste collection",
-            "instruction": "Keep it sealed and separate. Follow authorised hazardous waste disposal guidance."
-        }
+        "bin": "E-waste collection point",
+        "instruction": "Do not put electronic waste in regular bins. Use an authorised e-waste collection centre."
+    },
+
+    "Hazardous": {
+        "items": {
+            "paint": ["paint container", "paint waste"],
+            "chemical": ["industrial chemical", "chemical waste"],
+            "medicine": ["expired medicine", "expired tablets", "old medicines"],
+            "pesticide": ["pesticide container", "insecticide"],
+            "disinfectant": ["cleaning chemical"],
+            "used syringe": ["medical syringe", "needle", "used needle"],
+            "bleach": ["bleach container"],
+            "motor oil": ["used engine oil", "waste oil"],
+            "solvent": ["paint thinner", "thinner"],
+            "fluorescent tube": ["tube light", "cfl bulb"],
+        },
+        "bin": "Authorised hazardous waste collection",
+        "instruction": "Keep hazardous waste sealed and separate. Follow authorised disposal guidance."
     }
+}
 
-    for category, data in rules.items():
-        if any(word in item for word in data["items"]):
-            return {
-                "item": item.title(),
-                "category": category,
-                "bin": data["bin"],
-                "instruction": data["instruction"]
-            }
+
+def normalize(text):
+    text = text.lower().strip()
+    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    return re.sub(r"\s+", " ", text)
+
+
+def classify_waste(item):
+    cleaned = normalize(item)
+
+    if cleaned in {"soil", "garden soil", "potting soil", "topsoil"}:
+        return {
+            "item": item.strip().title(),
+            "category": "Special Handling",
+            "bin": "Reuse / Garden Soil",
+            "instruction": "Clean soil may be reused for gardening or landscaping. Do not mix contaminated soil with regular waste. Seek local authority guidance for contaminated soil."
+        }
+
+    if not cleaned:
+        return {
+            "item": "Empty input",
+            "category": "Unknown",
+            "bin": "No result",
+            "instruction": "Please enter a waste item."
+        }
+
+    for category, data in RULES.items():
+        for name, aliases in data["items"].items():
+            terms = [name] + aliases
+
+            for term in terms:
+                if re.search(r"\b" + re.escape(normalize(term)) + r"\b", cleaned):
+                    return {
+                        "item": name.title(),
+                        "category": category,
+                        "bin": data["bin"],
+                        "instruction": data["instruction"]
+                    }
 
     return {
-        "item": item.title(),
+        "item": item.strip().title(),
         "category": "Unknown",
         "bin": "Check local collection guidance",
-        "instruction": "We don't have a verified disposal match for this item yet. Please check with your local waste authority."
+        "instruction": "We do not have a verified disposal match for this item yet. Please check with your local waste authority."
     }
