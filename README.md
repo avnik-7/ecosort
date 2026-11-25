@@ -277,7 +277,7 @@ These improvements represent proposed future developments and are not part of th
 
 ### Acknowledgements
 
-EcoSort is developed as a collaborative project for Smart India Hackathon (SIH) 2026, with the objective of addressing practical challenges in waste segregation and municipal waste management through technology.
+EcoSort is developed as a collaborative project for Srujan Hackathon by L&T 2026, with the objective of addressing practical challenges in waste segregation and municipal waste management through technology.
 
 The team acknowledges the open-source tools, libraries, and development platforms that contributed to the development, visualisation, and deployment of the project.
 
