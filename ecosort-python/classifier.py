@@ -23,7 +23,7 @@ RULES = {
         "items": {
             "paper": ["waste paper", "scrap paper"],
             "cardboard": ["carton", "cardboard box"],
-            "plastic bottle": ["pet bottle", "water bottle"],
+            "plastic bottle": ["pet bottle", "water bottle", "plastic"],
             "glass bottle": ["glass jar", "broken glass bottle"],
             "newspaper": ["old newspaper"],
             "metal can": ["tin can", "aluminium can"],
